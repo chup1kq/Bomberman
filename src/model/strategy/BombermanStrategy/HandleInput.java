@@ -5,7 +5,15 @@ import java.awt.event.KeyListener;
 
 public class HandleInput implements KeyListener {
 
+    private static HandleInput INSTANCE = new HandleInput();
+
     private boolean up, down, left, right, space;
+
+    private HandleInput() {}
+
+    public static HandleInput getInstance() {
+        return INSTANCE;
+    }
 
     public boolean isUp() {
         return up;

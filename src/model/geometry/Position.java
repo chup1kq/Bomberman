@@ -43,4 +43,9 @@ public class Position {
     public int hashCode() {
         return 31 * Double.hashCode(_x) + Double.hashCode(_y);
     }
+
+    @Override
+    public String toString() {
+        return "(" + _x + "," + _y  + ")";
+    }
 }
