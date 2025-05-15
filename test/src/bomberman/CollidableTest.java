@@ -3,10 +3,7 @@ package bomberman;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.Map;
-import java.util.HashMap;
-
-import model.geometry.Collidable;
+import model.logic.Collidable;
 import model.geometry.Position;
 import model.geometry.Size;
 
@@ -22,10 +19,13 @@ class CollidableTest {
         }
 
         @Override
-        public Map<Position, Size> getBounds() {
-            Map<Position, Size> bounds = new HashMap<>();
-            bounds.put(position, size);
-            return bounds;
+        public Position position() {
+            return position;
+        }
+
+        @Override
+        public Size size() {
+            return size != null ? size : new Size(0, 0);
         }
     }
 
@@ -60,8 +60,8 @@ class CollidableTest {
     }
 
     @Test
-    @DisplayName("Размер объекта null")
-    void testObjectsWhenOneSizeIsNull_UsesZeroSize() {
+    @DisplayName("Размер объекта null (должен использовать Size(0, 0))")
+    void testObjectsWhenOneSizeIsNull() {
         Collidable a = new TestCollidable(new Position(0, 0), new Size(2, 2));
         Collidable b = new TestCollidable(new Position(1, 1), null);
         assertTrue(a.intersects(b));
@@ -69,10 +69,10 @@ class CollidableTest {
     }
 
     @Test
-    @DisplayName("Один из объектов null")
+    @DisplayName("Один из объектов null (должно быть исключение)")
     void testObjectsWhenOtherIsNull() {
         Collidable a = new TestCollidable(new Position(0, 0), new Size(1, 1));
-        assertThrows(IllegalArgumentException.class, () -> a.intersects((Collidable) null));
+        assertThrows(IllegalArgumentException.class, () -> a.intersects((Position) null));
     }
 
     @Test
@@ -116,19 +116,19 @@ class CollidableTest {
     @DisplayName("Точка на границе объекта")
     void testPointsWhenPointOnEdge() {
         Collidable obj = new TestCollidable(new Position(5, 5), new Size(2, 2));
-        assertTrue(obj.intersects(new Position(6, 4))); // верхняя грань
-        assertTrue(obj.intersects(new Position(4, 6))); // левая грань
+        assertTrue(obj.intersects(new Position(6, 4)));
+        assertTrue(obj.intersects(new Position(4, 6)));
     }
 
     @Test
-    @DisplayName("Одна точка null")
+    @DisplayName("Позиция null (должно быть исключение)")
     void testPointsWhenPositionIsNull() {
         Collidable obj = new TestCollidable(new Position(0, 0), new Size(1, 1));
         assertThrows(IllegalArgumentException.class, () -> obj.intersects((Position) null));
     }
 
     @Test
-    @DisplayName("Размер объекта null")
+    @DisplayName("Объект с нулевым размером")
     void testPointsWithZeroSizeObject() {
         Collidable obj = new TestCollidable(new Position(5, 5), new Size(0, 0));
         assertTrue(obj.intersects(new Position(5, 5)));
@@ -136,7 +136,7 @@ class CollidableTest {
     }
 
     @Test
-    @DisplayName("Размер объекта null")
+    @DisplayName("Размер объекта null (должен вести себя как Size(0, 0))")
     void testPointsWithNullSize() {
         Collidable obj = new TestCollidable(new Position(5, 5), null);
         assertTrue(obj.intersects(new Position(5, 5)));
