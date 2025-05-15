@@ -1,6 +1,6 @@
 package model.timer;
 
-import model.Updatable;
+import model.logic.Updatable;
 import model.event.TimerEvent;
 import model.event.TimerListener;
 
@@ -9,8 +9,11 @@ import java.util.List;
 
 public class Timer implements Updatable {
 
+    // milliseconds
     private double _time;
+
     private final double _maxTime;
+
     private boolean _isRunning;
 
     public Timer(double maxTime) {
@@ -62,8 +65,17 @@ public class Timer implements Updatable {
 
                 TimerEvent event = new TimerEvent(this);
                 event.setTimer(this);
-                fireTimeIsOver(new TimerEvent(this));
+                fireTimeIsOver(event);
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        int seconds = (int) (_time / 1000);
+        int min = seconds / 60;
+        int sec = seconds % 60;
+
+        return String.format("%02d:%02d", min, sec);
     }
 }
