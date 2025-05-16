@@ -53,6 +53,7 @@ public interface Collidable {
             Position pos1, Size size1,
             Position pos2, Size size2
     ) {
+        if (pos1 == null || pos2 == null) return false;
         boolean overlapX = pos1.getX() + size1.getWidth() / 2 >= pos2.getX() - size2.getWidth() / 2 &&
                 pos1.getX() - size1.getWidth() / 2 <= pos2.getX() + size2.getWidth() / 2;
 

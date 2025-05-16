@@ -198,4 +198,8 @@ public class GameField implements Updatable, Renderable {
         if (_bomberman.position() != null) _bomberman.render(g);
         _enemies.forEach(enemy -> enemy.render(g));
     }
+
+    public void setNewBomberman() {
+        _bomberman = new Bomberman(this, new BombermanStrategy(), null);
+    }
 }

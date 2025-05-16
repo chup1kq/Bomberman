@@ -3,9 +3,11 @@ package model.level;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Level {
+public class Level {
 
-    private static final Map<Integer, String[][]> _levels = new HashMap<>(){{
+    private static final Level INSTANCE = new Level();
+
+    private final Map<Integer, String[][]> _levels = new HashMap<>() {{
         put(1, new String[][]{
                 {"#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"},
                 {"#", "B", " ", "*", "*", " ", "*", " ", " ", " ", "*", " ", "*", " ", "*", " ", "#"},
@@ -21,15 +23,34 @@ public abstract class Level {
                 {"#", " ", "*", " ", "*", " ", "*", " ", " ", "b", " ", "*", " ", "*", " ", "*", "#"},
                 {"#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"}
         });
+        put(2, new String[][]{
+                {"#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"},
+                {"#", "B", " ", "*", " ", " ", "*", " ", " ", " ", "*", " ", " ", " ", " ", " ", "#"},
+                {"#", " ", "#", " ", "#", " ", "#", " ", "#", " ", "#", " ", "#", "d", "#", " ", "#"},
+                {"#", "*", " ", "*", " ", " ", " ", "*", " ", " ", " ", "*", " ", " ", "*", " ", "#"},
+                {"#", " ", "#", " ", "#", " ", "#", "p", "#", " ", "#", " ", "#", " ", "#", " ", "#"},
+                {"#", " ", " ", "*", " ", " ", " ", "d", " ", " ", " ", "*", " ", " ", " ", "*", "#"},
+                {"#", "*", "#", " ", "#", "b", "#", " ", "#", " ", "#", " ", "#", " ", "#", " ", "#"},
+                {"#", " ", " ", " ", " ", " ", " ", " ", "*", " ", " ", " ", " ", " ", " ", " ", "#"},
+                {"#", " ", "#", "s", "#", " ", "#", " ", "#", " ", "#", " ", "#", " ", "#", " ", "#"},
+                {"#", " ", " ", " ", " ", " ", " ", " ", " ", "*", "*", "*", " ", "r", " ", " ", "#"},
+                {"#", " ", "#", "*", "#", " ", "#", " ", "#", " ", "#", " ", "#", " ", "#", " ", "#"},
+                {"#", " ", " ", "*", " ", " ", "*", "*", " ", " ", "b", " ", " ", "*", " ", " ", "#"},
+                {"#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"}
+        });
     }};
 
-    private static final int MAX_LEVEL = _levels.size();
+    private Level() {}
 
-    public static int getMaxLevel() {
-        return MAX_LEVEL;
+    public static Level getInstance() {
+        return INSTANCE;
     }
 
-    public static String[][] getLevel(int id) {
+    public int getMaxLevel() {
+        return _levels.size();
+    }
+
+    public String[][] getLevel(int id) {
         String[][] grid = _levels.get(id);
         if (grid == null) {
             throw new IllegalArgumentException("Level not found: " + id);
