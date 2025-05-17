@@ -4,7 +4,6 @@ import model.Game;
 import model.GameCycle;
 import model.event.GameEvent;
 import model.event.GameListener;
-import model.strategy.BombermanStrategy.HandleInput;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,7 +67,7 @@ public class GamePanel extends JFrame {
     }
 
     private JLayeredPane buildGameLayeredPane() {
-        _fieldPanel.addKeyListener(HandleInput.getInstance());
+        _fieldPanel.addKeyListener(_game.getField().getBomberman().getInput());
         _fieldPanel.setFocusable(true);
 
         Dimension size = _fieldPanel.getPreferredSize();

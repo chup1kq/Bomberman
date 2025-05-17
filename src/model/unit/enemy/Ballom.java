@@ -3,7 +3,6 @@ package model.unit.enemy;
 import model.field.Cell;
 import model.field.GameField;
 import model.geometry.Position;
-import model.strategy.EnemyStrategy.EnemyStrategy;
 import model.view.sprites.SpriteLoader;
 
 import java.awt.*;
@@ -17,8 +16,6 @@ public class Ballom extends Enemy {
 
     public Ballom(GameField field, Position position) {
         super(field, position, DEFAULT_HEALTH, DEFAULT_SPEED);
-
-        setStrategy(new EnemyStrategy(this));
     }
 
     @Override

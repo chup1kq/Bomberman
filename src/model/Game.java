@@ -8,7 +8,6 @@ import model.level.Level;
 import model.logic.Renderable;
 import model.logic.Updatable;
 import model.object.Portal;
-import model.strategy.BombermanStrategy.BombermanStrategy;
 import model.timer.Timer;
 import model.unit.Bomberman;
 import model.unit.enemy.Enemy;

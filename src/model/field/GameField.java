@@ -9,7 +9,6 @@ import model.object.GameObject;
 import model.object.Portal;
 import model.object.bomb.Bomb;
 import model.object.wall.BreakableWall;
-import model.strategy.BombermanStrategy.BombermanStrategy;
 import model.unit.Bomberman;
 import model.unit.Unit;
 import model.unit.enemy.Enemy;
@@ -25,7 +24,7 @@ public class GameField implements Updatable, Renderable {
     private final static int HEIGHT = 13;
     private final static int WIDTH = 17;
 
-    private Bomberman _bomberman = new Bomberman(this, new BombermanStrategy(), null);
+    private Bomberman _bomberman = new Bomberman(this,  null);
 
     private final List<Enemy> _enemies = new ArrayList<>();
 
@@ -41,7 +40,6 @@ public class GameField implements Updatable, Renderable {
     }};
 
     public GameField() {
-        _bomberman.getStrategy().setUnit(_bomberman);
         mergeCells();
     }
 
@@ -200,6 +198,6 @@ public class GameField implements Updatable, Renderable {
     }
 
     public void setNewBomberman() {
-        _bomberman = new Bomberman(this, new BombermanStrategy(), null);
+        _bomberman = new Bomberman(this, null);
     }
 }

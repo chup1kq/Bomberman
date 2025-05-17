@@ -1,5 +1,6 @@
 package model.unit;
 
+import model.enums.Direction;
 import model.event.TimerEvent;
 import model.event.TimerListener;
 import model.event.UnitEvent;
@@ -12,14 +13,15 @@ import model.object.bomb.Bomb;
 import model.enums.BonusType;
 import model.field.GameField;
 import model.geometry.Position;
-import model.object.bomb.Explosion;
-import model.strategy.UnitStrategy;
 import model.timer.Timer;
 import model.unit.enemy.Enemy;
 import model.view.sprites.SpriteLoader;
 
 import java.awt.*;
-import java.sql.Time;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Bomberman extends Unit {
 
@@ -31,15 +33,18 @@ public class Bomberman extends Unit {
 
     private int _bombRadius = 1;
 
+    private final HandleInput input = HandleInput.getInstance();
+
     private boolean _isInvulnerable = false;
 
     private Timer _invulnerableTimer;
 
-    public Bomberman(GameField field, UnitStrategy strategy, Position position) {
+    public Bomberman(GameField field, Position position) {
         super(field, position, DEFAULT_HP, START_SPEED);
+    }
 
-        setStrategy(strategy);
-        getStrategy().setUnit(this);
+    public KeyListener getInput() {
+        return input;
     }
 
     //------------------------------- Bombs ----------------------------
@@ -72,35 +77,53 @@ public class Bomberman extends Unit {
         }
     }
 
-    public void plantBomb() {
+    private void plantBomb() {
         Cell cell = getField().getCellAt(position());
         if (cell.isEmpty() && getField().countBombs(this) < _supplyOfBombs) {
             new Bomb(cell, _bombRadius, this);
         }
     }
 
+    private void handleMovement(double deltaTime) {
+        int dx = 0, dy = 0;
+
+        if (input.isUp()) dy++;
+        if (input.isDown()) dy--;
+        if (input.isLeft()) dx--;
+        if (input.isRight()) dx++;
+
+        if (dx != 0 || dy != 0) {
+            List<Direction> directions = new ArrayList<>();
+            if (dx > 0) directions.add(Direction.EAST);
+            if (dx < 0) directions.add(Direction.WEST);
+            if (dy > 0) directions.add(Direction.NORTH);
+            if (dy < 0) directions.add(Direction.SOUTH);
+
+            Direction direction = Direction.fromSubdirections(directions);
+            move(direction, deltaTime);
+        }
+    }
+
+    private void handleBombPlanting() {
+        if (input.isSpace()) {
+            plantBomb();
+        }
+    }
+
+
     @Override
     public void update(double deltaTime) {
-        super.update(deltaTime);
+        handleMovement(deltaTime);
+        handleBombPlanting();
         if (_invulnerableTimer != null) _invulnerableTimer.update(deltaTime);
+        findCollisions();
+    }
+
+    private void findCollisions() {
+        findCollideWithExplosion();
         findCollideWithEnemy();
         findCollideWithBonus();
         findCollideWithPortal();
-    }
-
-    private void findCollideWithPortal() {
-        getField().findColliding(this, Portal.class)
-                .ifPresent(this::collide);
-    }
-
-    private void findCollideWithBonus() {
-        getField().findColliding(this, Bonus.class)
-                .ifPresent(this::collide);
-    }
-
-    private void findCollideWithEnemy() {
-        getField().findColliding(this, Enemy.class)
-                .ifPresent(this::collide);
     }
 
     @Override
@@ -121,15 +144,10 @@ public class Bomberman extends Unit {
         }
     }
 
-//    private void respawn() {
-//        setPosition(new Position(40, 40));
-//    }
-
     @Override
     public void takeDamage(int damage) {
         if (!_isInvulnerable) {
             setHealthPoint(getHealthPoint() - 1);
-            //respawn();
 
             _isInvulnerable = true;
             _invulnerableTimer = new Timer(2000);
@@ -164,6 +182,62 @@ public class Bomberman extends Unit {
         public void timeIsOver(TimerEvent event) {
             _isInvulnerable = false;
             _invulnerableTimer = null;
+        }
+    }
+
+    private static class HandleInput implements KeyListener {
+
+        private static final HandleInput INSTANCE = new HandleInput();
+
+        private boolean up, down, left, right, space;
+
+        private HandleInput() {}
+
+        public static HandleInput getInstance() {
+            return INSTANCE;
+        }
+
+        public boolean isUp() {
+            return up;
+        }
+
+        public boolean isDown() {
+            return down;
+        }
+
+        public boolean isLeft() {
+            return left;
+        }
+
+        public boolean isRight() {
+            return right;
+        }
+
+        public boolean isSpace() {
+            return space;
+        }
+
+        @Override
+        public void keyTyped(KeyEvent e) {}
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            int keyCode = e.getKeyCode();
+            if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) up = true;
+            if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) down = true;
+            if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) left = true;
+            if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) right = true;
+            if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_X) space = true;
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            int keyCode = e.getKeyCode();
+            if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_W) up = false;
+            if (keyCode == KeyEvent.VK_DOWN || keyCode == KeyEvent.VK_S) down = false;
+            if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_A) left = false;
+            if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) right = false;
+            if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_X) space = false;
         }
     }
 }
