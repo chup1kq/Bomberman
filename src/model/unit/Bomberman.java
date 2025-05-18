@@ -33,7 +33,7 @@ public class Bomberman extends Unit {
 
     private int _bombRadius = 1;
 
-    private final HandleInput input = HandleInput.getInstance();
+    private final HandleInput _input = HandleInput.getInstance();
 
     private boolean _isInvulnerable = false;
 
@@ -44,7 +44,7 @@ public class Bomberman extends Unit {
     }
 
     public KeyListener getInput() {
-        return input;
+        return _input;
     }
 
     //------------------------------- Bombs ----------------------------
@@ -87,10 +87,10 @@ public class Bomberman extends Unit {
     private void handleMovement(double deltaTime) {
         int dx = 0, dy = 0;
 
-        if (input.isUp()) dy++;
-        if (input.isDown()) dy--;
-        if (input.isLeft()) dx--;
-        if (input.isRight()) dx++;
+        if (_input.isUp()) dy++;
+        if (_input.isDown()) dy--;
+        if (_input.isLeft()) dx--;
+        if (_input.isRight()) dx++;
 
         if (dx != 0 || dy != 0) {
             List<Direction> directions = new ArrayList<>();
@@ -105,7 +105,7 @@ public class Bomberman extends Unit {
     }
 
     private void handleBombPlanting() {
-        if (input.isSpace()) {
+        if (_input.isSpace()) {
             plantBomb();
         }
     }

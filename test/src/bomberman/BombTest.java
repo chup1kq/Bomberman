@@ -27,6 +27,9 @@ class BombTest {
     void setUp() {
         unit = new Unit(null, new Position(20, 20), 0, 0) {
             @Override
+            public void update(double deltaTime) {}
+
+            @Override
             public void render(Graphics g) {}
 
             @Override

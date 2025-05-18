@@ -11,8 +11,6 @@ import model.object.wall.UnbreakableWall;
 
 public class GameObjectFactory extends AbstractFactory  {
 
-    private static final int DEFAULT_RADIUS = 1;
-
     private BreakableWall createBreakableWallWithObject(Cell cell, GameObject object) {
         BreakableWall wall = createBreakableWall(cell);
         wall.setObject(object);

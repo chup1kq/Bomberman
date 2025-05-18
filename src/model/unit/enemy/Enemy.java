@@ -43,7 +43,7 @@ public abstract class Enemy extends Unit {
     }
 
     public boolean dead() {
-        return _isDead;
+        return getHealthPoint() <= 0;
     }
 
     @Override

@@ -206,11 +206,11 @@ public abstract class Unit implements Updatable, Collidable, Damageable, Rendera
         _listeners.remove(listener);
     }
 
-    public void fireDied(UnitEvent event) {
+    protected void fireDied(UnitEvent event) {
         _listeners.forEach(listener -> listener.died(event));
     }
 
-    public void fireFoundExit(UnitEvent event) {
+    protected void fireFoundExit(UnitEvent event) {
         _listeners.forEach(listener -> listener.foundExit(event));
     }
 }

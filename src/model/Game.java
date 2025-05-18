@@ -76,12 +76,6 @@ public class Game implements Updatable, Renderable {
 
         UnitObserver unitObserver = new UnitObserver();
         _field.getBomberman().addListener(unitObserver);
-
-        // Это я убрал, тк слушать не надо
-//        _field.getEnemies().forEach(e -> {
-//            UnitObserver observer = new UnitObserver();
-//            e.addListener(observer);
-//        });
     }
 
     public void finish() {
@@ -179,15 +173,6 @@ public class Game implements Updatable, Renderable {
                 }
 
                 _field.respawnBomberman();
-                return;
-            }
-
-            if (event.getUnit() instanceof Enemy) {
-                if (_field.getEnemies().isEmpty()) {
-                    Portal portal = _field.getPortal();
-
-                    if (portal != null) portal.open();
-                }
             }
         }
 
@@ -212,11 +197,11 @@ public class Game implements Updatable, Renderable {
         _listeners.remove(listener);
     }
 
-    public void fireVictory(GameEvent event) {
+    private void fireVictory(GameEvent event) {
         _listeners.forEach(listener -> listener.onVictory(event));
     }
 
-    public void fireDefeat(GameEvent event) {
+    private void fireDefeat(GameEvent event) {
         _listeners.forEach(listener -> listener.onDefeat(event));
     }
 }

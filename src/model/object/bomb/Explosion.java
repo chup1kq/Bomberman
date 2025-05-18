@@ -73,7 +73,7 @@ public class Explosion extends GameObject implements Updatable {
     //----------------------------------------------------------------
 
     public static void createExplosion(Cell cell, int radius, int damage) {
-        new Explosion(cell, radius, Orientation.OMNIDIRECTIONAL, damage);
+        new Explosion(cell, Orientation.OMNIDIRECTIONAL, damage);
 
         for (Direction dir : DIRECTIONS.keySet()) {
             Cell current = cell;
@@ -90,13 +90,13 @@ public class Explosion extends GameObject implements Updatable {
                 }
 
                 Orientation orientation = DIRECTIONS.get(dir);
-                new Explosion(current, radius - i, orientation, damage);
+                new Explosion(current, orientation, damage);
             }
         }
     }
 
 
-    private Explosion(Cell cell, int radius, Orientation orientation, int damage) {
+    private Explosion(Cell cell, Orientation orientation, int damage) {
         super(cell, DEFAULT_SIZES.get(Orientation.OMNIDIRECTIONAL));
 
         _orientation = orientation;
