@@ -10,6 +10,7 @@ import model.object.Bonus;
 import model.object.GameObject;
 import model.object.Portal;
 import model.object.bomb.Explosion;
+import model.object.bomb.explosion.CrossStrategy;
 import model.object.wall.BreakableWall;
 import model.object.wall.UnbreakableWall;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ import java.util.Objects;
 public class ExplosionTest {
 
     private List<Cell> _cells;
+    private CrossStrategy _strategy = new CrossStrategy();
 
     @BeforeEach
     void setUp() {
@@ -34,7 +36,7 @@ public class ExplosionTest {
     @DisplayName("Создание взрыва в середине поля")
     void explosionInCenter() {
         Cell cell = _cells.get(4);
-        Explosion.createExplosion(cell, 1, 1);
+        _strategy.createExplosion(cell, 1, 1);
 
         assertNull(_cells.get(0).getObject());
         assertInstanceOf(Explosion.class, _cells.get(1).getObject());
@@ -57,7 +59,7 @@ public class ExplosionTest {
     @DisplayName("Создание взрыва в левом верхнем углу")
     void explosionTopLeftCorner() {
         Cell cell = _cells.get(0);
-        Explosion.createExplosion(cell, 1, 1);
+        _strategy.createExplosion(cell, 1, 1);
 
         assertInstanceOf(Explosion.class, _cells.get(0).getObject());
         assertInstanceOf(Explosion.class, _cells.get(1).getObject());
@@ -78,7 +80,7 @@ public class ExplosionTest {
     @DisplayName("Создание взрыва в правом нижнем углу")
     void explosionBottomRightCorner() {
         Cell cell = _cells.get(8);
-        Explosion.createExplosion(cell, 1, 1);
+        _strategy.createExplosion(cell, 1, 1);
 
         assertInstanceOf(Explosion.class, _cells.get(8).getObject());
         assertInstanceOf(Explosion.class, _cells.get(5).getObject());
@@ -99,7 +101,7 @@ public class ExplosionTest {
     @DisplayName("Создание взрыва в левом верхнем углу")
     void explosionTopLeftCornerWithRadius2() {
         Cell cell = _cells.get(0);
-        Explosion.createExplosion(cell, 2, 1);
+        _strategy.createExplosion(cell, 2, 1);
 
         assertInstanceOf(Explosion.class, _cells.get(0).getObject());
         assertInstanceOf(Explosion.class, _cells.get(1).getObject());
@@ -126,7 +128,7 @@ public class ExplosionTest {
         new UnbreakableWall(_cells.get(3));
         new UnbreakableWall(_cells.get(5));
         new UnbreakableWall(_cells.get(7));
-        Explosion.createExplosion(cell, 1, 1);
+        _strategy.createExplosion(cell, 1, 1);
 
         assertNull(_cells.get(0).getObject());
         assertInstanceOf(UnbreakableWall.class, _cells.get(1).getObject());
@@ -149,7 +151,7 @@ public class ExplosionTest {
         new BreakableWall(_cells.get(3));
         new BreakableWall(_cells.get(5));
         new BreakableWall(_cells.get(7));
-        Explosion.createExplosion(cell, 1, 1);
+        _strategy.createExplosion(cell, 1, 1);
 
         assertNull(_cells.get(0).getObject());
         assertNull(_cells.get(1).getObject());
@@ -172,7 +174,7 @@ public class ExplosionTest {
         new BreakableWall(_cells.get(3), 2);
         new BreakableWall(_cells.get(5), 2);
         new BreakableWall(_cells.get(7), 2);
-        Explosion.createExplosion(cell, 1, 1);
+        _strategy.createExplosion(cell, 1, 1);
 
         assertNull(_cells.get(0).getObject());
         assertInstanceOf(BreakableWall.class, _cells.get(1).getObject());
@@ -195,7 +197,7 @@ public class ExplosionTest {
         GameObject object2 = new Portal(_cells.get(3));
         BreakableWall wall = new BreakableWall(_cells.get(1));
         wall.setObject(object1);
-        Explosion.createExplosion(cell, 1, 1);
+        _strategy.createExplosion(cell, 1, 1);
 
         assertInstanceOf(Explosion.class, _cells.get(0).getObject());
         assertInstanceOf(Bonus.class, _cells.get(1).getObject());
@@ -214,7 +216,7 @@ public class ExplosionTest {
     @DisplayName("Обновление взрыва")
     void updateExplosion() {
         Cell cell = _cells.get(4);
-        Explosion.createExplosion(cell, 1, 1);
+        _strategy.createExplosion(cell, 1, 1);
 
         assertNull(_cells.get(0).getObject());
         assertInstanceOf(Explosion.class, _cells.get(1).getObject());
@@ -246,7 +248,7 @@ public class ExplosionTest {
     @DisplayName("Обновление взрыва, но он не пропадает")
     void updateExplosionNotFinishedEarly() {
         Cell cell = _cells.get(4);
-        Explosion.createExplosion(cell, 1, 1);
+        _strategy.createExplosion(cell, 1, 1);
 
         assertNull(_cells.get(0).getObject());
         assertInstanceOf(Explosion.class, _cells.get(1).getObject());

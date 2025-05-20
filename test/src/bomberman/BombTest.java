@@ -5,6 +5,11 @@ import model.geometry.Position;
 import model.object.GameObject;
 import model.object.bomb.Bomb;
 import model.object.bomb.Explosion;
+import model.object.bomb.detonation.DetonationStrategy;
+import model.object.bomb.detonation.TimerStrategy;
+import model.object.bomb.explosion.CrossStrategy;
+import model.object.bomb.explosion.ExplosionStrategy;
+import model.timer.Timer;
 import model.unit.Unit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +23,8 @@ class BombTest {
     private Bomb bomb;
     private Cell cell;
     private Unit unit;
+    private ExplosionStrategy _explosionStrategy = new CrossStrategy();
+    private DetonationStrategy _detonationStrategy;
     private final int TEST_RADIUS = 2;
     private final Position TEST_POSITION = new Position(100, 100);
 
@@ -25,6 +32,7 @@ class BombTest {
 
     @BeforeEach
     void setUp() {
+        _detonationStrategy = new TimerStrategy(new Timer(2000));
         unit = new Unit(null, new Position(20, 20), 0, 0) {
             @Override
             public void update(double deltaTime) {}
@@ -38,10 +46,12 @@ class BombTest {
             }
         };
         cell = new Cell(TEST_POSITION);
-        bomb = new Bomb(cell, TEST_RADIUS, unit) {
+        bomb = new Bomb(cell, TEST_RADIUS, unit, _detonationStrategy, _explosionStrategy) {
             @Override
             public void update(double deltaTime) {
-                getTimer().update(deltaTime);
+                if (_detonationStrategy.shouldExplode(this, deltaTime)) {
+                    explode();
+                }
             }
         };
     }
