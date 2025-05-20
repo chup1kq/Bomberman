@@ -5,7 +5,6 @@ import model.event.TimerEvent;
 import model.event.TimerListener;
 import model.field.Cell;
 import model.geometry.Size;
-import model.logic.Damageable;
 import model.logic.Updatable;
 import model.object.GameObject;
 import model.enums.Direction;
@@ -19,17 +18,10 @@ import java.util.Map;
 
 public class Explosion extends GameObject implements Updatable {
 
-    private static final Map<Orientation, Size> DEFAULT_SIZES = new EnumMap<>(Orientation.class) {{
+    protected static final Map<Orientation, Size> DEFAULT_SIZES = new EnumMap<>(Orientation.class) {{
         put(Orientation.HORIZONTAL, new Size(40, 30));
         put(Orientation.VERTICAL, new Size(30, 40));
         put(Orientation.OMNIDIRECTIONAL, new Size(40, 40));
-    }};
-
-    private static final Map<Direction, Orientation> DIRECTIONS = new EnumMap<>(Direction.class){{
-        put(Direction.NORTH, Orientation.VERTICAL);
-        put(Direction.SOUTH, Orientation.VERTICAL);
-        put(Direction.WEST, Orientation.HORIZONTAL);
-        put(Direction.EAST, Orientation.HORIZONTAL);
     }};
 
     private Orientation _orientation;
@@ -72,38 +64,16 @@ public class Explosion extends GameObject implements Updatable {
 
     //----------------------------------------------------------------
 
-    public static void createExplosion(Cell cell, int radius, int damage) {
-        new Explosion(cell, Orientation.OMNIDIRECTIONAL, damage);
-
-        for (Direction dir : DIRECTIONS.keySet()) {
-            Cell current = cell;
-            for (int i = 1; i <= radius; i++) {
-                current = current.getNeighbor(dir);
-                if (current == null) break;
-
-                GameObject obj = current.getObject();
-                if (obj != null) {
-                    if (obj instanceof Damageable) {
-                        ((Damageable)obj).takeDamage(damage);
-                    }
-                    break;
-                }
-
-                Orientation orientation = DIRECTIONS.get(dir);
-                new Explosion(current, orientation, damage);
-            }
-        }
-    }
-
-
-    private Explosion(Cell cell, Orientation orientation, int damage) {
+    public Explosion(Cell cell, Orientation orientation, int damage) {
         super(cell, DEFAULT_SIZES.get(Orientation.OMNIDIRECTIONAL));
 
         _orientation = orientation;
         _damage = damage;
-        _timer.start();
+
         TimerObserver observer = new TimerObserver();
         _timer.addListener(observer);
+
+        _timer.start();
     }
 
 

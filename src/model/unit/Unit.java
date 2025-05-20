@@ -20,7 +20,6 @@ import model.object.wall.Wall;
 import model.unit.enemy.Enemy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
