@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class Explosion extends GameObject implements Updatable {
 
-    protected static final Map<Orientation, Size> DEFAULT_SIZES = new EnumMap<>(Orientation.class) {{
+    private static final Map<Orientation, Size> DEFAULT_SIZES = new EnumMap<>(Orientation.class) {{
         put(Orientation.HORIZONTAL, new Size(40, 30));
         put(Orientation.VERTICAL, new Size(30, 40));
         put(Orientation.OMNIDIRECTIONAL, new Size(40, 40));
