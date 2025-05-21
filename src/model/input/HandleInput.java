@@ -1,11 +1,13 @@
-package model.strategy.BombermanStrategy;
+package model.input;
+
+import model.unit.Bomberman;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class HandleInput implements KeyListener {
 
-    private static HandleInput INSTANCE = new HandleInput();
+    private static final HandleInput INSTANCE = new HandleInput();
 
     private boolean up, down, left, right, space;
 
@@ -57,5 +59,4 @@ public class HandleInput implements KeyListener {
         if (keyCode == KeyEvent.VK_RIGHT || keyCode == KeyEvent.VK_D) right = false;
         if (keyCode == KeyEvent.VK_SPACE || keyCode == KeyEvent.VK_X) space = false;
     }
-
 }

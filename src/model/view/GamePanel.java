@@ -4,7 +4,7 @@ import model.Game;
 import model.GameCycle;
 import model.event.GameEvent;
 import model.event.GameListener;
-import model.strategy.BombermanStrategy.HandleInput;
+import model.input.HandleInput;
 
 import javax.swing.*;
 import java.awt.*;

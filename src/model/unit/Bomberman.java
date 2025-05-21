@@ -1,9 +1,11 @@
 package model.unit;
 
+import model.enums.Direction;
 import model.event.TimerEvent;
 import model.event.TimerListener;
 import model.event.UnitEvent;
 import model.field.Cell;
+import model.input.HandleInput;
 import model.logic.Collidable;
 import model.object.Bonus;
 import model.object.GameObject;
@@ -12,14 +14,19 @@ import model.object.bomb.Bomb;
 import model.enums.BonusType;
 import model.field.GameField;
 import model.geometry.Position;
-import model.object.bomb.Explosion;
-import model.strategy.UnitStrategy;
+import model.object.bomb.detonation.DetonationStrategy;
+import model.object.bomb.detonation.TimerStrategy;
+import model.object.bomb.explosion.CrossStrategy;
+import model.object.bomb.explosion.ExplosionStrategy;
 import model.timer.Timer;
 import model.unit.enemy.Enemy;
 import model.view.sprites.SpriteLoader;
 
 import java.awt.*;
-import java.sql.Time;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Bomberman extends Unit {
 
@@ -31,15 +38,18 @@ public class Bomberman extends Unit {
 
     private int _bombRadius = 1;
 
+    private final HandleInput _input = HandleInput.getInstance();
+
     private boolean _isInvulnerable = false;
 
     private Timer _invulnerableTimer;
 
-    public Bomberman(GameField field, UnitStrategy strategy, Position position) {
+    public Bomberman(GameField field, Position position) {
         super(field, position, DEFAULT_HP, START_SPEED);
+    }
 
-        setStrategy(strategy);
-        getStrategy().setUnit(this);
+    public KeyListener getInput() {
+        return _input;
     }
 
     //------------------------------- Bombs ----------------------------
@@ -72,35 +82,58 @@ public class Bomberman extends Unit {
         }
     }
 
-    public void plantBomb() {
+    private void plantBomb() {
         Cell cell = getField().getCellAt(position());
         if (cell.isEmpty() && getField().countBombs(this) < _supplyOfBombs) {
-            new Bomb(cell, _bombRadius, this);
+            new Bomb(cell,
+                    _bombRadius,
+                    this,
+                    new TimerStrategy(new Timer(2000)),
+                    new CrossStrategy()
+            );
         }
     }
 
+    private void handleMovement(double deltaTime) {
+        int dx = 0, dy = 0;
+
+        if (_input.isUp()) dy++;
+        if (_input.isDown()) dy--;
+        if (_input.isLeft()) dx--;
+        if (_input.isRight()) dx++;
+
+        if (dx != 0 || dy != 0) {
+            List<Direction> directions = new ArrayList<>();
+            if (dx > 0) directions.add(Direction.EAST);
+            if (dx < 0) directions.add(Direction.WEST);
+            if (dy > 0) directions.add(Direction.NORTH);
+            if (dy < 0) directions.add(Direction.SOUTH);
+
+            Direction direction = Direction.fromSubdirections(directions);
+            move(direction, deltaTime);
+        }
+    }
+
+    private void handleBombPlanting() {
+        if (_input.isSpace()) {
+            plantBomb();
+        }
+    }
+
+
     @Override
     public void update(double deltaTime) {
-        super.update(deltaTime);
+        handleMovement(deltaTime);
+        handleBombPlanting();
         if (_invulnerableTimer != null) _invulnerableTimer.update(deltaTime);
+        findCollisions();
+    }
+
+    private void findCollisions() {
+        findCollideWithExplosion();
         findCollideWithEnemy();
         findCollideWithBonus();
         findCollideWithPortal();
-    }
-
-    private void findCollideWithPortal() {
-        getField().findColliding(this, Portal.class)
-                .ifPresent(this::collide);
-    }
-
-    private void findCollideWithBonus() {
-        getField().findColliding(this, Bonus.class)
-                .ifPresent(this::collide);
-    }
-
-    private void findCollideWithEnemy() {
-        getField().findColliding(this, Enemy.class)
-                .ifPresent(this::collide);
     }
 
     @Override
@@ -121,15 +154,10 @@ public class Bomberman extends Unit {
         }
     }
 
-//    private void respawn() {
-//        setPosition(new Position(40, 40));
-//    }
-
     @Override
     public void takeDamage(int damage) {
         if (!_isInvulnerable) {
             setHealthPoint(getHealthPoint() - 1);
-            //respawn();
 
             _isInvulnerable = true;
             _invulnerableTimer = new Timer(2000);

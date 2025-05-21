@@ -11,23 +11,21 @@ import model.geometry.Size;
 import model.logic.Damageable;
 import model.logic.Renderable;
 import model.logic.Updatable;
+import model.object.Bonus;
 import model.object.GameObject;
 import model.object.Portal;
 import model.object.bomb.Bomb;
 import model.object.bomb.Explosion;
 import model.object.wall.Wall;
-import model.strategy.UnitStrategy;
+import model.unit.enemy.Enemy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public abstract class Unit implements Updatable, Collidable, Damageable, Renderable {
 
     private static final Size DEFAULT_SIZE = new Size(30, 30);
-
-    private UnitStrategy _strategy;
 
     private double _speed;
 
@@ -44,16 +42,6 @@ public abstract class Unit implements Updatable, Collidable, Damageable, Rendera
         _position = position;
         _healthPoint = healthPoint;
         _speed = speed;
-    }
-
-    //------------------------------- Strategy ----------------------------
-
-    public UnitStrategy getStrategy() {
-        return _strategy;
-    }
-
-    public void setStrategy(UnitStrategy strategy) {
-        _strategy = strategy;
     }
 
     //------------------------------- Speed ----------------------------
@@ -118,20 +106,34 @@ public abstract class Unit implements Updatable, Collidable, Damageable, Rendera
     }
 
 
-    @Override
-    public void update(double deltaTime) {
-        _strategy.update(deltaTime);
-        findCollideWithExplosion();
-    }
-
     public void collide(Collidable object) {
         if (object instanceof Explosion explosion) {
             takeDamage(explosion.getDamage());
         }
     }
 
-    private void findCollideWithExplosion() {
+    protected void findCollideWithExplosion() {
         _field.findColliding(this, Explosion.class)
+                .ifPresent(this::collide);
+    }
+
+    protected void findCollideWithPortal() {
+        getField().findColliding(this, Portal.class)
+                .ifPresent(this::collide);
+    }
+
+    protected void findCollideWithBonus() {
+        getField().findColliding(this, Bonus.class)
+                .ifPresent(this::collide);
+    }
+
+    protected void findCollideWithEnemy() {
+        getField().findColliding(this, Enemy.class)
+                .ifPresent(this::collide);
+    }
+
+    protected void findCollideWithBomberman() {
+        getField().findColliding(this, Bomberman.class)
                 .ifPresent(this::collide);
     }
 
@@ -203,11 +205,11 @@ public abstract class Unit implements Updatable, Collidable, Damageable, Rendera
         _listeners.remove(listener);
     }
 
-    public void fireDied(UnitEvent event) {
+    protected void fireDied(UnitEvent event) {
         _listeners.forEach(listener -> listener.died(event));
     }
 
-    public void fireFoundExit(UnitEvent event) {
+    protected void fireFoundExit(UnitEvent event) {
         _listeners.forEach(listener -> listener.foundExit(event));
     }
 }

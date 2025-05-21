@@ -1,14 +1,12 @@
 package model.object.bomb;
 
-import model.event.TimerEvent;
-import model.event.TimerListener;
 import model.field.Cell;
 import model.geometry.Size;
 import model.logic.Damageable;
 import model.logic.Updatable;
 import model.object.GameObject;
-import model.timer.Timer;
-import model.unit.Bomberman;
+import model.object.bomb.detonation.DetonationStrategy;
+import model.object.bomb.explosion.ExplosionStrategy;
 import model.unit.Unit;
 import model.view.sprites.SpriteLoader;
 import org.jetbrains.annotations.NotNull;
@@ -21,21 +19,23 @@ public class Bomb extends GameObject implements Updatable, Damageable {
 
     private final int _radius;
 
-    private final Timer _timer = new Timer(2000);
-
     private boolean _isTransparent = true;
 
     private int _damage = 1;
 
     private final Unit _owner;
 
-    public Bomb(@NotNull Cell cell, int radius, @NotNull Unit owner) {
+    private final DetonationStrategy _detonationStrategy;
+
+    private final ExplosionStrategy _explosionStrategy;
+
+    public Bomb(@NotNull Cell cell, int radius, @NotNull Unit owner, DetonationStrategy detonationStrategy, ExplosionStrategy explosionStrategy) {
         super(cell, DEFAULT_SIZE);
 
         _radius = radius;
         _owner = owner;
-        _timer.start();
-        _timer.addListener(new TimerObserver());
+        _detonationStrategy = detonationStrategy;
+        _explosionStrategy = explosionStrategy;
     }
 
     //--------------- Радиус --------------------------
@@ -60,12 +60,6 @@ public class Bomb extends GameObject implements Updatable, Damageable {
         return _damage;
     }
 
-    //--------------- Таймер --------------------------
-
-    public Timer getTimer() {
-        return _timer;
-    }
-
     //--------------- Можно пройти через? --------------------------
 
     public void setTransparent(boolean isTransparent) {
@@ -80,12 +74,14 @@ public class Bomb extends GameObject implements Updatable, Damageable {
     public void explode() {
         Cell cell = getCell();
         cell.deleteObject();
-        Explosion.createExplosion(cell, _radius, _damage);
+        _explosionStrategy.createExplosion(cell, _radius, _damage);
     }
 
     @Override
     public void update(double deltaTime) {
-        _timer.update(deltaTime);
+        if (_detonationStrategy.shouldExplode(this, deltaTime)) {
+            explode();
+        }
 
         if (_isTransparent && _owner.getField().findColliding(this, _owner.getClass()).isEmpty()) {
             _isTransparent = false;
@@ -107,15 +103,5 @@ public class Bomb extends GameObject implements Updatable, Damageable {
     @Override
     public void takeDamage(int damage) {
         explode();
-    }
-
-    private class TimerObserver implements TimerListener {
-
-        @Override
-        public void timeIsOver(TimerEvent event) {
-            if (_timer == event.getTimer()) {
-                explode();
-            }
-        }
     }
 }

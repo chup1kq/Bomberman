@@ -52,7 +52,7 @@ public class Timer implements Updatable {
         _listeners.remove(listener);
     }
 
-    public void fireTimeIsOver(TimerEvent event) {
+    private void fireTimeIsOver(TimerEvent event) {
         _listeners.forEach(listener -> listener.timeIsOver(event));
     }
 

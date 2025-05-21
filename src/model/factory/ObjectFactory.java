@@ -2,9 +2,6 @@ package model.factory;
 
 import model.enums.BonusType;
 import model.field.Cell;
-import model.object.Portal;
-import model.object.bomb.Bomb;
-import model.object.bomb.Explosion;
 import model.object.wall.BreakableWall;
 import model.object.wall.UnbreakableWall;
 

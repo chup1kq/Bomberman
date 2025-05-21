@@ -9,29 +9,28 @@ import model.geometry.Position;
 import model.object.Bonus;
 import model.object.Portal;
 import model.object.bomb.Bomb;
-import model.strategy.BombermanStrategy.BombermanStrategy;
 import model.unit.Bomberman;
 import model.unit.enemy.Dahl;
 import model.unit.enemy.Enemy;
-import model.strategy.UnitStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import javax.swing.*;
+import java.awt.event.KeyEvent;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BombermanTest {
     private Bomberman bomberman;
     private GameField field;
-    private UnitStrategy strategy;
     private Position testPosition;
 
     @BeforeEach
     void setUp() {
         field = new GameField();
-        strategy = new BombermanStrategy();
         testPosition = field.getCells().get(0).position();
-        bomberman = new Bomberman(field, strategy, testPosition);
+        bomberman = new Bomberman(field, testPosition);
         field.setBomberman(bomberman);
     }
 
@@ -76,34 +75,48 @@ class BombermanTest {
     }
 
     @Test
-    @DisplayName("Установка бомбы при наличии запаса")
-    void plantBombWhenHasSupplyTest() {
-        assertEquals(0, field.countBombs(bomberman));
-        bomberman.plantBomb();
+    @DisplayName("Установка бомбы")
+    void plantBombViaSpaceInputTest() {
+        bomberman.getInput().keyPressed(new KeyEvent(new JPanel(), KeyEvent.KEY_PRESSED,
+                System.currentTimeMillis(), 0, KeyEvent.VK_SPACE, ' '));
+
+        bomberman.update(0);
+
+        assertEquals(1, field.countBombs(bomberman));
+
+        Bomb bomb = (Bomb) field.getCellAt(bomberman.position()).getObject();
+        assertEquals(bomberman, bomb.getOwner());
+    }
+
+    @Test
+    @DisplayName("Не устанавливает бомбу при достижении лимита")
+    void plantBombLimitViaUpdateTest() {
+        bomberman.setSupplyOfBombs(1);
+
+        // Симулируем нажатие пробела и устанавливаем первую бомбу
+        bomberman.getInput().keyPressed(new KeyEvent(new JPanel(), KeyEvent.KEY_PRESSED,
+                System.currentTimeMillis(), 0, KeyEvent.VK_SPACE, ' '));
+        bomberman.update(0);
+
+        Position newPos = field.getCells().get(1).position();
+        bomberman.setPosition(newPos);
+
+        bomberman.update(0);
+
         assertEquals(1, field.countBombs(bomberman));
     }
 
     @Test
-    @DisplayName("Не устанавливает бомбу при превышении лимита")
-    void plantBombWhenExceedsSupplyTest() {
-        Cell cell = field.getCells().get(5);
-        new Bomb(cell, 1, bomberman);
-        assertEquals(1, field.countBombs(bomberman));
-        bomberman.plantBomb();
-        assertEquals(1, field.countBombs(bomberman));
-    }
+    @DisplayName("Не устанавливает бомбу на занятую клетку через update")
+    void plantBombOnOccupiedCellViaUpdateTest() {
+        Cell cell = field.getCellAt(bomberman.position());
+        new Bonus(cell, BonusType.SPEED_BONUS);
 
-    @Test
-    @DisplayName("На поле есть бомба, установленная врагом")
-    void enemyBombOnFieldTest() {
-        Cell cell = field.getCells().get(5);
-        Enemy enemy = new Dahl(field, cell.position());
-        new Bomb(cell, 1, enemy);
+        bomberman.getInput().keyPressed(new KeyEvent(new JPanel(), KeyEvent.KEY_PRESSED,
+                System.currentTimeMillis(), 0, KeyEvent.VK_SPACE, ' '));
+        bomberman.update(0);
 
-        assertEquals(1, field.countBombs(enemy));
         assertEquals(0, field.countBombs(bomberman));
-        bomberman.plantBomb();
-        assertEquals(1, field.countBombs(bomberman));
     }
 
     @Test
@@ -141,15 +154,6 @@ class BombermanTest {
         bomberman.takeDamage(1);
         assertEquals(2, bomberman.getHealthPoint());
     }
-
-//    @Test
-//    @DisplayName("Перерождение Bomberman'а при потере здоровья")
-//    void respawnBomberman() {
-//        bomberman.setPosition(field.getCells().get(1).position());
-//        bomberman.takeDamage(1);
-//        assertEquals(field.getCells().get(18).position(), bomberman.position());
-//    }
-
 
     class BombermanObserver implements UnitListener {
 
