@@ -14,16 +14,13 @@ import model.object.bomb.Bomb;
 import model.enums.BonusType;
 import model.field.GameField;
 import model.geometry.Position;
-import model.object.bomb.detonation.DetonationStrategy;
 import model.object.bomb.detonation.TimerStrategy;
 import model.object.bomb.explosion.CrossStrategy;
-import model.object.bomb.explosion.ExplosionStrategy;
 import model.timer.Timer;
 import model.unit.enemy.Enemy;
 import model.view.sprites.SpriteLoader;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.List;
