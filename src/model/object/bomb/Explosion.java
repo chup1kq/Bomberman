@@ -26,8 +26,6 @@ public class Explosion extends GameObject implements Updatable {
 
     private Orientation _orientation;
 
-    private int _explosionRange;
-
     private int _damage;
 
     private final Timer _timer = new Timer(1000);
@@ -40,16 +38,6 @@ public class Explosion extends GameObject implements Updatable {
 
     public int getDamage() {
         return _damage;
-    }
-
-    //----------------------------------------------------------------
-
-    public int getExplosionRange() {
-        return _explosionRange;
-    }
-
-    void setExplosionRange(int explosionRange) {
-        _explosionRange = explosionRange;
     }
 
     //----------------------------------------------------------------
