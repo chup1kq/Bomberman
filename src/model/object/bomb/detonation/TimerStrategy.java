@@ -4,6 +4,7 @@ import model.event.TimerEvent;
 import model.event.TimerListener;
 import model.object.bomb.Bomb;
 import model.timer.Timer;
+import org.jetbrains.annotations.NotNull;
 
 public class TimerStrategy implements DetonationStrategy {
 
@@ -21,7 +22,7 @@ public class TimerStrategy implements DetonationStrategy {
     }
 
     @Override
-    public boolean shouldExplode(Bomb bomb, double deltaTime) {
+    public boolean shouldExplode(@NotNull Bomb bomb, double deltaTime) {
         _timer.update(deltaTime);
         return _shouldExplode;
     }
