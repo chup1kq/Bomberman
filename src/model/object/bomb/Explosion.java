@@ -53,7 +53,7 @@ public class Explosion extends GameObject implements Updatable {
     //----------------------------------------------------------------
 
     public Explosion(Cell cell, Orientation orientation, int damage) {
-        super(cell, DEFAULT_SIZES.get(Orientation.OMNIDIRECTIONAL));
+        super(cell, DEFAULT_SIZES.get(orientation));
 
         _orientation = orientation;
         _damage = damage;
