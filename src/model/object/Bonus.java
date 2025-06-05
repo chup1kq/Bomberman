@@ -3,7 +3,6 @@ package model.object;
 import model.enums.BonusType;
 import model.field.Cell;
 import model.geometry.Size;
-import model.view.sprites.SpriteLoader;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -33,27 +32,7 @@ public class Bonus extends GameObject {
 
     @Override
     public void render(Graphics g) {
-        BufferedImage image;
-
-        switch (_type) {
-            case SPEED_BONUS:
-                image = SpriteLoader.speedBonusTile();
-                break;
-            case RADIUS_BONUS:
-                image = SpriteLoader.radiusBonusTile();
-                break;
-            case AMMUNITION_BONUS:
-                image = SpriteLoader.ammunitionBonusTile();
-                break;
-            case NON_CENTRAL_RADIUS_BONUS:
-                image = SpriteLoader.nonCenterBombBonusTile();
-                break;
-            case PROXIMITY_BOMB_BONUS:
-                image = SpriteLoader.proximityBombBonusTile();
-                break;
-            default:
-                return;
-        }
+        BufferedImage image = _type.getSprite();
 
         double offsetX = (Cell.getDefaultSize().getWidth() - size().getWidth()) / 2.0;
         double offsetY = (Cell.getDefaultSize().getHeight() - size().getHeight()) / 2.0;
@@ -67,5 +46,4 @@ public class Bonus extends GameObject {
                 null
         );
     }
-
 }
