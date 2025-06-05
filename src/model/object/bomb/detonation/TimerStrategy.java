@@ -12,8 +12,8 @@ public class TimerStrategy implements DetonationStrategy {
 
     private boolean _shouldExplode = false;
 
-    public TimerStrategy(Timer timer) {
-        _timer = timer;
+    public TimerStrategy() {
+        _timer = new Timer(2_000);
 
         TimerObserver observer = new TimerObserver();
         _timer.addListener(observer);

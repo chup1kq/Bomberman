@@ -32,7 +32,7 @@ class BombTest {
 
     @BeforeEach
     void setUp() {
-        _detonationStrategy = new TimerStrategy(new Timer(2000));
+        _detonationStrategy = new TimerStrategy();
         unit = new Unit(null, new Position(20, 20), 0, 0) {
             @Override
             public void update(double deltaTime) {}

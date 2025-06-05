@@ -85,7 +85,7 @@ public class Bomberman extends Unit {
             new Bomb(cell,
                     _bombRadius,
                     this,
-                    new TimerStrategy(new Timer(2000)),
+                    new TimerStrategy(),
                     new CrossStrategy()
             );
         }
