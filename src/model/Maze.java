@@ -61,6 +61,8 @@ public class Maze {
                     case "s" -> _factory.createBonusInWall(cell, BonusType.SPEED_BONUS);
                     case "a" -> _factory.createBonusInWall(cell, BonusType.AMMUNITION_BONUS);
                     case "r" -> _factory.createBonusInWall(cell, BonusType.RADIUS_BONUS);
+                    case "n" -> _factory.createBonusInWall(cell, BonusType.NON_CENTRAL_RADIUS_BONUS);
+                    case "m" -> _factory.createBonusInWall(cell, BonusType.PROXIMITY_BOMB_BONUS);
                 }
             }
         }
