@@ -91,6 +91,14 @@ public abstract class SpriteLoader {
         return spriteSheet.getSubimage(1 * TILE_SIZE, 10 * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }
 
+    public static BufferedImage nonCenterBombBonusTile() {
+        return spriteSheet.getSubimage(2 * TILE_SIZE, 10 * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    }
+
+    public static BufferedImage proximityBombBonusTile() {
+        return spriteSheet.getSubimage(6 * TILE_SIZE, 10 * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+    }
+
     public static BufferedImage dahlTile() {
         return spriteSheet.getSubimage(11 * TILE_SIZE, 0 * TILE_SIZE, TILE_SIZE, TILE_SIZE);
     }

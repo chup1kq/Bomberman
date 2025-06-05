@@ -45,6 +45,12 @@ public class Bonus extends GameObject {
             case AMMUNITION_BONUS:
                 image = SpriteLoader.ammunitionBonusTile();
                 break;
+            case NON_CENTRAL_RADIUS_BONUS:
+                image = SpriteLoader.nonCenterBombBonusTile();
+                break;
+            case PROXIMITY_BOMB_BONUS:
+                image = SpriteLoader.proximityBombBonusTile();
+                break;
             default:
                 return;
         }
