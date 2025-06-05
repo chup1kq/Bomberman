@@ -7,7 +7,6 @@ import model.field.Cell;
 import model.geometry.Size;
 import model.logic.Updatable;
 import model.object.GameObject;
-import model.enums.Direction;
 import model.timer.Timer;
 import model.view.sprites.SpriteLoader;
 

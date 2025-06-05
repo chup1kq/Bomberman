@@ -280,7 +280,7 @@ public class ExplosionTest {
         assertNotNull(_cells.get(7).getObject());
     }
 
-    private static List<Cell> create3x3Field() {
+     static List<Cell> create3x3Field() {
         int size = 3;
         Cell[][] grid = new Cell[size][size];
         List<Cell> allCells = new ArrayList<>();
