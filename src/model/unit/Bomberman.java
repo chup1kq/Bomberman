@@ -14,8 +14,12 @@ import model.object.bomb.Bomb;
 import model.enums.BonusType;
 import model.field.GameField;
 import model.geometry.Position;
+import model.object.bomb.detonation.DetonationStrategy;
+import model.object.bomb.detonation.ProximityStrategy;
 import model.object.bomb.detonation.TimerStrategy;
 import model.object.bomb.explosion.CrossStrategy;
+import model.object.bomb.explosion.ExplosionStrategy;
+import model.object.bomb.explosion.WaveStrategy;
 import model.timer.Timer;
 import model.unit.enemy.Enemy;
 import model.view.sprites.SpriteLoader;
@@ -44,6 +48,8 @@ public class Bomberman extends Unit {
     public Bomberman(GameField field, Position position) {
         super(field, position, DEFAULT_HP, START_SPEED);
     }
+
+    private BombSettings _bombSettings = new BombSettings();
 
     public KeyListener getInput() {
         return _input;
@@ -76,20 +82,35 @@ public class Bomberman extends Unit {
             case BonusType.AMMUNITION_BONUS -> _supplyOfBombs++;
             case BonusType.RADIUS_BONUS -> _bombRadius++;
             case BonusType.SPEED_BONUS -> setSpeed(getSpeed() + 0.02);
+            case BonusType.NON_CENTRAL_RADIUS_BONUS -> setBombSettings(TimerStrategy.class, WaveStrategy.class);
+            case BonusType.PROXIMITY_BOMB_BONUS -> setBombSettings(ProximityStrategy.class, CrossStrategy.class);
         }
+    }
+
+    private void setBombSettings(Class<? extends DetonationStrategy> detonationType,
+                                 Class<? extends ExplosionStrategy> explosionType) {
+        _bombSettings = new BombSettings(detonationType, explosionType);
     }
 
     private void plantBomb() {
         Cell cell = getField().getCellAt(position());
         if (cell.isEmpty() && getField().countBombs(this) < _supplyOfBombs) {
-            new Bomb(cell,
-                    _bombRadius,
-                    this,
-                    new TimerStrategy(),
-                    new CrossStrategy()
-            );
+            try {
+                DetonationStrategy detonationStrategy = _bombSettings.getDetonationType().getDeclaredConstructor().newInstance();
+                ExplosionStrategy explosionStrategy = _bombSettings.getExplosionType().getDeclaredConstructor().newInstance();
+
+                new Bomb(cell,
+                        _bombRadius,
+                        this,
+                        detonationStrategy,
+                        explosionStrategy
+                );
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to instantiate bomb strategies", e);
+            }
         }
     }
+
 
     private void handleMovement(double deltaTime) {
         int dx = 0, dy = 0;
@@ -181,6 +202,29 @@ public class Bomberman extends Unit {
                 (int)size().getHeight(),
                 null
         );
+    }
+
+    private static class BombSettings {
+        private final Class<? extends DetonationStrategy> _detonationType;
+        private final Class<? extends ExplosionStrategy> _explosionType;
+
+        public BombSettings() {
+            this(TimerStrategy.class, CrossStrategy.class);
+        }
+
+        public BombSettings(Class<? extends DetonationStrategy> detonationType,
+                            Class<? extends ExplosionStrategy> explosionType) {
+            _detonationType = detonationType;
+            _explosionType = explosionType;
+        }
+
+        public Class<? extends DetonationStrategy> getDetonationType() {
+            return _detonationType;
+        }
+
+        public Class<? extends ExplosionStrategy> getExplosionType() {
+            return _explosionType;
+        }
     }
 
     private class TimerObserver implements TimerListener {
