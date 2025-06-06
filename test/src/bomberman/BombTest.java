@@ -4,6 +4,7 @@ import model.field.Cell;
 import model.geometry.Position;
 import model.object.GameObject;
 import model.object.bomb.Bomb;
+import model.object.bomb.BombSettings;
 import model.object.bomb.Explosion;
 import model.object.bomb.detonation.DetonationStrategy;
 import model.object.bomb.detonation.TimerStrategy;
@@ -23,8 +24,7 @@ class BombTest {
     private Bomb bomb;
     private Cell cell;
     private Unit unit;
-    private ExplosionStrategy _explosionStrategy = new CrossStrategy();
-    private DetonationStrategy _detonationStrategy;
+    private BombSettings bombSettings = new BombSettings(TimerStrategy.class, CrossStrategy.class);
     private final int TEST_RADIUS = 2;
     private final Position TEST_POSITION = new Position(100, 100);
 
@@ -32,7 +32,6 @@ class BombTest {
 
     @BeforeEach
     void setUp() {
-        _detonationStrategy = new TimerStrategy();
         unit = new Unit(null, new Position(20, 20), 0, 0) {
             @Override
             public void update(double deltaTime) {}
@@ -46,10 +45,10 @@ class BombTest {
             }
         };
         cell = new Cell(TEST_POSITION);
-        bomb = new Bomb(cell, TEST_RADIUS, unit, _detonationStrategy, _explosionStrategy) {
+        bomb = new Bomb(cell, TEST_RADIUS, unit, bombSettings) {
             @Override
             public void update(double deltaTime) {
-                if (_detonationStrategy.shouldExplode(this, deltaTime)) {
+                if (getDetonationStrategy().shouldExplode(this, deltaTime)) {
                     explode();
                 }
             }

@@ -3,6 +3,7 @@ package bomberman;
 import model.field.Cell;
 import model.field.GameField;
 import model.object.bomb.Bomb;
+import model.object.bomb.BombSettings;
 import model.object.bomb.detonation.ProximityStrategy;
 import model.object.bomb.detonation.TimerStrategy;
 import model.object.bomb.explosion.CrossStrategy;
@@ -32,7 +33,7 @@ public class ProximityStrategyTest {
     void spawnEnemyNearBomb() {
         Bomberman bomberman = gameField.getBomberman();
         ArrayList<Cell> cells = new ArrayList<>(gameField.getCells());
-        Bomb bomb = new Bomb(cells.get(18), 1, bomberman, new TimerStrategy(), new CrossStrategy());
+        Bomb bomb = new Bomb(cells.get(18), 1, bomberman, new BombSettings(TimerStrategy.class, CrossStrategy.class));
         gameField.spawnEnemy(new Dahl(gameField, cells.get(1).position()));
 
         assertTrue(proximityStrategy.shouldExplode(bomb, 0));
@@ -43,7 +44,7 @@ public class ProximityStrategyTest {
     void spawnEnemyNotNearBomb() {
         Bomberman bomberman = gameField.getBomberman();
         ArrayList<Cell> cells = new ArrayList<>(gameField.getCells());
-        Bomb bomb = new Bomb(cells.get(18), 1, bomberman, new TimerStrategy(), new CrossStrategy());
+        Bomb bomb = new Bomb(cells.get(18), 1, bomberman,  new BombSettings(TimerStrategy.class, CrossStrategy.class));
         gameField.spawnEnemy(new Dahl(gameField, cells.get(4).position()));
 
         assertFalse(proximityStrategy.shouldExplode(bomb, 0));

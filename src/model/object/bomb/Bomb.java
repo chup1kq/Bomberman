@@ -29,13 +29,18 @@ public class Bomb extends GameObject implements Updatable, Damageable {
 
     private final ExplosionStrategy _explosionStrategy;
 
-    public Bomb(@NotNull Cell cell, int radius, @NotNull Unit owner, DetonationStrategy detonationStrategy, ExplosionStrategy explosionStrategy) {
+    public Bomb(@NotNull Cell cell, int radius, @NotNull Unit owner, @NotNull BombSettings bombSettings) {
         super(cell, DEFAULT_SIZE);
 
         _radius = radius;
         _owner = owner;
-        _detonationStrategy = detonationStrategy;
-        _explosionStrategy = explosionStrategy;
+
+        try {
+            _detonationStrategy = bombSettings.getDetonationType().getDeclaredConstructor().newInstance();
+            _explosionStrategy = bombSettings.getExplosionType().getDeclaredConstructor().newInstance();
+        }  catch (Exception e) {
+            throw new RuntimeException("Failed to instantiate bomb strategies", e);
+        }
     }
 
     //--------------- Радиус --------------------------
@@ -58,6 +63,16 @@ public class Bomb extends GameObject implements Updatable, Damageable {
 
     public int getDamage() {
         return _damage;
+    }
+
+    //--------------- Стратегии --------------------------
+
+    public DetonationStrategy getDetonationStrategy() {
+        return _detonationStrategy;
+    }
+
+    public ExplosionStrategy getExplosionStrategy() {
+        return _explosionStrategy;
     }
 
     //--------------- Можно пройти через? --------------------------

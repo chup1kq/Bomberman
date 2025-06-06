@@ -14,6 +14,7 @@ import model.object.bomb.Bomb;
 import model.enums.BonusType;
 import model.field.GameField;
 import model.geometry.Position;
+import model.object.bomb.BombSettings;
 import model.object.bomb.detonation.DetonationStrategy;
 import model.object.bomb.detonation.ProximityStrategy;
 import model.object.bomb.detonation.TimerStrategy;
@@ -79,35 +80,24 @@ public class Bomberman extends Unit {
 
     public void useBonus(BonusType bonus) {
         switch (bonus) {
-            case BonusType.AMMUNITION_BONUS -> _supplyOfBombs++;
-            case BonusType.RADIUS_BONUS -> _bombRadius++;
-            case BonusType.SPEED_BONUS -> setSpeed(getSpeed() + 0.02);
-            case BonusType.NON_CENTRAL_RADIUS_BONUS -> setBombSettings(TimerStrategy.class, WaveStrategy.class);
-            case BonusType.PROXIMITY_BOMB_BONUS -> setBombSettings(ProximityStrategy.class, CrossStrategy.class);
+            case AMMUNITION_BONUS -> _supplyOfBombs++;
+            case RADIUS_BONUS -> _bombRadius++;
+            case SPEED_BONUS -> setSpeed(getSpeed() + 0.02);
+            default -> applyBombSettingsBonus(bonus);
         }
     }
 
-    private void setBombSettings(Class<? extends DetonationStrategy> detonationType,
-                                 Class<? extends ExplosionStrategy> explosionType) {
-        _bombSettings = new BombSettings(detonationType, explosionType);
+    private void applyBombSettingsBonus(BonusType bonus) {
+        BombSettings settings = bonus.getBombSettings();
+        if (settings != null) {
+            _bombSettings = settings;
+        }
     }
 
     private void plantBomb() {
         Cell cell = getField().getCellAt(position());
         if (cell.isEmpty() && getField().countBombs(this) < _supplyOfBombs) {
-            try {
-                DetonationStrategy detonationStrategy = _bombSettings.getDetonationType().getDeclaredConstructor().newInstance();
-                ExplosionStrategy explosionStrategy = _bombSettings.getExplosionType().getDeclaredConstructor().newInstance();
-
-                new Bomb(cell,
-                        _bombRadius,
-                        this,
-                        detonationStrategy,
-                        explosionStrategy
-                );
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to instantiate bomb strategies", e);
-            }
+            new Bomb(cell, _bombRadius, this, _bombSettings);
         }
     }
 
@@ -160,7 +150,7 @@ public class Bomberman extends Unit {
 
         if (object instanceof Enemy enemy) {
             takeDamage(enemy.getDamage());
-        }else if (object instanceof Bonus bonus) {
+        } else if (object instanceof Bonus bonus) {
             useBonus(bonus.getType());
             ((GameObject) object).getCell().deleteObject();
         } else if (object instanceof Portal portal) {
@@ -196,35 +186,12 @@ public class Bomberman extends Unit {
 
         g.drawImage(
                 SpriteLoader.bombermanTile(),
-                (int)(position().getX() + offsetX),
-                (int)(position().getY() + offsetY),
-                (int)size().getWidth(),
-                (int)size().getHeight(),
+                (int) (position().getX() + offsetX),
+                (int) (position().getY() + offsetY),
+                (int) size().getWidth(),
+                (int) size().getHeight(),
                 null
         );
-    }
-
-    private static class BombSettings {
-        private final Class<? extends DetonationStrategy> _detonationType;
-        private final Class<? extends ExplosionStrategy> _explosionType;
-
-        public BombSettings() {
-            this(TimerStrategy.class, CrossStrategy.class);
-        }
-
-        public BombSettings(Class<? extends DetonationStrategy> detonationType,
-                            Class<? extends ExplosionStrategy> explosionType) {
-            _detonationType = detonationType;
-            _explosionType = explosionType;
-        }
-
-        public Class<? extends DetonationStrategy> getDetonationType() {
-            return _detonationType;
-        }
-
-        public Class<? extends ExplosionStrategy> getExplosionType() {
-            return _explosionType;
-        }
     }
 
     private class TimerObserver implements TimerListener {
